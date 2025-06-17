@@ -273,7 +273,7 @@ let number = if true { 5 } else { 0 };
 
 - `break` and `continue` will always apply to the innermost loop (that they have access too)
 
-  - to apply these keywords to other loops we can use loop labels
+- to apply these keywords to other loops we can use loop labels
 
   ```rust
   fn main() {
@@ -300,4 +300,40 @@ let number = if true { 5 } else { 0 };
   }
   ```
 
-  - a loop label is designated with a single quote followed by a name i.e. `'loop name: loop`
+- a loop label is designated with a single quote followed by a name i.e. `'loop name: loop`
+
+- `while` loops work essentially the same way as while loops in most other languages and should be use to loop until a condition is met
+
+  ```rust
+  fn main() {
+      let mut number = 3;
+
+      while number != 0 {
+          println!("{number}");
+
+          number -= 1;
+      }
+
+      println!("done");
+  }
+  ```
+
+- `for` loops have a few different approaches:
+
+  ```rust
+  let a = [1, 2, 3, 4, 5];
+
+  // this loops through every value in the 'a' array
+  for n in a {
+      println!("{n}")
+  }
+  ```
+
+  ```rust
+  // this loops through the range (1..4) provided, in reverse (because of the .rev() call)
+  // ranges are by default non-inclusive (on the end value) but can be made inclusive with an '='
+  // 1..=4 to include 4
+  for number in (1..4).rev() {
+      println!("{number}")
+  }
+  ```
