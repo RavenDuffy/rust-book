@@ -56,7 +56,7 @@ This section goes over making a simple guessing game that take user input from c
 
 - rust is statically typed
 
-### Scalar Types
+<u>**Scalar Types**</u>
 
 - these are single value types which include: integers, floats, booleans and characters (there are more but these are the relevant ones for now)
 - these types are all saved on the stack by default
@@ -115,7 +115,7 @@ There are a few float types which are unsigned
 - specified with single quotes (i.e. `'z'`)
 - chars are 4bytes and therefore can represent a lot more than just ascii (including accented letters, chinese characters and even emojis)
 
-### Compound Types
+<u>**Compound Types**</u>
 
 - these are all saved on the stack by default
 - these are types that group multiple values into a single type (i.e. an array)
@@ -337,3 +337,50 @@ let number = if true { 5 } else { 0 };
       println!("{number}")
   }
   ```
+
+## 4. Ownership
+
+Rust has a concept called ownership that allow rust to make memory safe guarentees without the need for a garbage collector.
+
+### 4.1 What is Ownership?
+
+Ownership is a set of rules rust follows in order to manage memory. Ownership only affects the code before it runs (i.e. all issues will be caught during compilation).
+
+<u>**The Stack and the Heap**</u>
+
+Both the stack and the heap are available during runtime but they're structured differently. The stack stores values in the order it receives them and removes the values in the opposite order (i.e. last in, first out). Data added to the stack is called a _push_; data removed is called a _pop_. All data stored on the **stack** must have a known, fixed size. Any data with unknown size at compile time or any data that may change must be stored on the **heap** instead.
+
+When data is stored on the heap a few steps happen: First, a certain amount of space is requested; then the memory allocator finds an empty spot in the heap (large enough for the data); that spot is marked as in use and returns a pointer to that address. That process is called _allocating on the heap_ (often abbreviated as _allocating_). \*Pushing values onto the stack is not considered allocating. Because the pointer to the heap is known and is a fixed size, it can be stored on the heap. However, if you want the actual data you have to follow the pointer.
+
+Pushing to the stack is faster than allocating on the heap because the allocator doesn't have to search for a place to store new data; the location is always the top of the stack. Allocating (on the heap) requires more work because the allocator must find a space big enough for the new data and then perform book-keeping to be prepared for the next allocation. Accessing data on the heap is slower than the accessing it on the stack because you have to follow the pointer to get it.
+
+When rust calls a function, the values passed into that function (which can include pointers to data in the heap) and that functions local variables get pushed to the stack. When the called function ends, the values that were pushed to the stack are all popped.
+
+<u>**Ownership Rules**</u>
+
+Rust follows three ownership rules:
+
+1. Each value has an _owner_
+2. There can only be one owner at a time
+3. When an owner goes out of scope, the value is dropped
+
+**Variable Scope**
+
+- variables are only valid from when they're first initalised, until it goes out of scope
+  - scopes are usually defined by curly brackets (anything inside them is within their scope)
+  - top level scopes would be defined before anything else and would be available everywhere
+
+**Strings**
+
+In rust there are two main string types: `&str` and `String`. `&str` is a slice (`&[u8]`) which points to a valid **UTF-8** sequence, these can be used to view `Strings`. The other type is a `String`, which is stored as a vector of bytes (`Vec<u8>`). `String`s are guaranteed to be a **UTF-8** sequence, they're heap allocated, growable and not null terminated. There are also string literals which are defined as `"string"` (which is a `&'static str` type).
+
+`String`s are defined as:
+
+```rust
+let s = String::from("hello");
+
+// we can also mutate these strings!
+s.push_str(" world");
+```
+
+**Memory and Allocation**
