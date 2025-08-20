@@ -1197,3 +1197,58 @@ Rust has a number of ways to manage code organisation:
 - **Paths**: Way of naming an item (i.e. a `struct`, `function` or `module`)
 
 ### 7.1 Packages and Crates
+
+A _crate_ is the smallest amount of code the compiler considers at a time. There are two types of
+crates: binary or library. Binary crates are programs that can be compiled into an executable (i.e.
+a cli, server, etc). All binary crates must have a `main` function - which is used to define what
+the compiled executable will do when it's run.
+
+Library crates define functionallity aimed to be used by multiple projects. These crates don't have
+a `main` function and because of that, they don't produce an executable when compiled.
+
+Crates all have a source file (a.k.a, a _crate root_) where the compiler starts traversal.
+
+A _package_ is a bundle of one or more crates. All packages contain a _Cargo.toml_ file which
+describes how to build the bundled crates. Packages can house as many binary crates as necessary but
+only one library crate (at the most).
+
+When a new package is created there are two file names that can be used: `src/main.rs` (which is the
+crate root of a binary crate) and `src/lib.rs` (which is the crate root of a library crate).
+Multiple binary crates can be created by placing files in the `src/bin` directory (where each file
+will be a separate crate).
+
+### 7.2 Defining Modules to Control Scope and Privacy
+
+**Modules Cheatsheet**
+
+1. Start from the crate root: when compiling a crate the compiler looks for the crate root first
+   (`src/lib.rs` for a library crate or `src/main.rs` for a binary crate).
+2. Declaring modules: in the crate root file new modules can be declared using the `mod` keyword
+   (i.e. `mod new_module;`) - the compiler will look for module code in the following places:
+   - inline, within curly brackets that replace the semicolon (i.e. `mod new_module { /** code here
+*/ }`)
+   - in the file _src/new_module.rs_
+   - in the file _src/new_module/mod.rs_
+3. Declaring submodules: in any other file, aside from the crate root, you can declare submodules
+   (i.e. `mod newer_module` within the previous `new_module` module). The compiler looks for these
+   submodule implementations in the same places as normal modules (just one step down i.e.
+   _src/new_module/newer_module.rs_, etc)
+4. Paths to code in modules: modules within crates can be accessed from anywhere else within the
+   same crate (as long as their public). If, for example, we wanted to access `new_module`, we can
+   do `crate::new_module::newer_module`.
+5. Private vs public: by default, module code is private from its parent modules. To make a module
+   public we do `pub mod` instead of just `mod` when declaring the module. Items within a public
+   module are also private by default (by prefixing `pub`).
+6. The `use` keyword: `use` allows us to bring other modules into scope (i.e. instead of calling the
+   entire `newer_module` path we can just `use crate::new_module::newer_module` and now we can use
+   `newer_module` in that scope).
+
+**Grouping Related Code in Modules**
+
+_Modules_ are used to organise code within a crate for readability, reuse and privacy (which is by
+default private).
+
+In the [restaurant](restaurant/src/main.rs) directory, we have an example of how modules can help
+with organisation.
+
+### 7.3 Paths for Referrring to an Item in the Module Tree
