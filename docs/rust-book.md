@@ -1252,3 +1252,74 @@ In the [restaurant](restaurant/src/main.rs) directory, we have an example of how
 with organisation.
 
 ### 7.3 Paths for Referrring to an Item in the Module Tree
+
+In order to allow Rust to find items in module trees, we use paths which can either be an _absolute
+path_ or a _relative path_. An _absolute path_ starts at the crate root - literally `crate` - (or
+the crate name if pulling from an external crate). A relative path starts from the current module
+and uses `self`, `super` or another identifier in the current module.
+
+Below is an example of calling the `add_to_waitlist` function using both an absolute path and a
+relative one.
+
+```rust
+mod front_of_house {
+    mod hosting {
+        fn add_to_waitlist() {}
+    }
+}
+
+pub fn eat_at_restaurant() {
+    // absolute path
+    crate::front_of_house::hosting::add_to_waitlist();
+
+    // relative path
+    front_of_house::hosting::add_to_waitlist();
+}
+```
+
+In the previous snippet there is actually one issue as it currently stands: if we try to access the
+hosting submodule, we'll encounter a privacy error. By default, all children of all other items
+(i.e. functions, methods, structs, etc) are private.
+
+To resolve our aforementioned privacy issue we'll simply make both the `hosting` module and the
+`add_to_waitlist` function public. We'll do so using the `pub` keyword like the following:
+
+```rust
+mod front_of_house {
+    pub mod hosting {
+        pub fn add_to_waitlist() {}
+    }
+}
+
+pub fn eat_at_restaurant() {
+    // absolute path
+    crate::front_of_house::hosting::add_to_waitlist();
+
+    // relative path
+    front_of_house::hosting::add_to_waitlist();
+}
+```
+
+**Starting Relative Paths with `super`**
+
+Relative paths can begin in the parent module using the `super` keyword at the start of the path. In
+the example below, we use `super` to get the higher level `deliver_order` function:
+
+```rust
+fn deliver_order() {}
+
+mod back_of_house {
+    fn fix_incorrect_order () {
+        cook_order();
+        super::deliver_order();
+    }
+
+    fn cook_order() {}
+}
+```
+
+**Making `structs` and `enums` public**
+
+Refer to [modules-7_3/src/main.rs](modules-7_3/src/main.rs)
+
+### 7.4 Bringing Paths into Scope with the `use` Keyword
